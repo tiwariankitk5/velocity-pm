@@ -19,3 +19,11 @@ export function signRefreshToken(payload: TokenPayload) {
 export function verifyAccessToken(token: string) {
   return jwt.verify(token, env.JWT_ACCESS_SECRET) as TokenPayload;
 }
+
+export function verifyRefreshToken(token: string) {
+  return jwt.verify(token, env.JWT_REFRESH_SECRET) as TokenPayload;
+}
+
+export function generateRandomToken() {
+  return require("crypto").randomBytes(32).toString("hex");
+}

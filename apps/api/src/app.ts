@@ -11,6 +11,7 @@ import { aiRouter } from "./routes/ai.routes.js";
 import { projectRouter } from "./routes/project.routes.js";
 import { taskRouter } from "./routes/task.routes.js";
 import { workspaceRouter } from "./routes/workspace.routes.js";
+import { analyticsRouter } from "./routes/analytics.routes.js";
 
 export function createApp() {
   const app = express();
@@ -28,6 +29,7 @@ export function createApp() {
   app.use("/api/projects", projectRouter);
   app.use("/api/tasks", taskRouter);
   app.use("/api/ai", aiRouter);
+  app.use("/api/analytics", analyticsRouter);
 
   app.use(errorHandler);
   return app;

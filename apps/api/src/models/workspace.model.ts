@@ -6,6 +6,7 @@ export interface WorkspaceDocument {
   slug: string;
   ownerId: Types.ObjectId;
   members: Array<{ userId: Types.ObjectId; role: Role; joinedAt: Date }>;
+  invitations: Array<{ email: string; role: Role; token: string; expiresAt: Date; status: "pending" | "accepted" | "revoked" }>;
 }
 
 const workspaceSchema = new Schema<WorkspaceDocument>(
@@ -18,6 +19,15 @@ const workspaceSchema = new Schema<WorkspaceDocument>(
         userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
         role: { type: String, enum: ["owner", "admin", "member"], default: "member" },
         joinedAt: { type: Date, default: Date.now }
+      }
+    ],
+    invitations: [
+      {
+        email: { type: String, required: true, lowercase: true },
+        role: { type: String, enum: ["admin", "member"], default: "member" },
+        token: { type: String, required: true },
+        expiresAt: { type: Date, required: true },
+        status: { type: String, enum: ["pending", "accepted", "revoked"], default: "pending" }
       }
     ]
   },

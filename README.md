@@ -11,59 +11,51 @@ Velocity PM is a production-shaped full-stack SaaS project for learning and demo
 - AI: OpenAI-ready service boundary with local fallback output
 - DevOps: Docker Compose, GitHub Actions, monorepo workspaces
 
-## Project Structure
+## Architecture & Features
 
-```txt
-apps/
-  api/      Express API, MongoDB models, auth, sockets, AI services
-  web/      Next.js application UI
-packages/
-  shared/   Shared TypeScript DTOs and enums
-docs/       Architecture, database design, roadmap
-docker/     Dockerfiles
-.github/    CI workflow
+Velocity PM is a production-grade full-stack SaaS project management tool.
+
+### Features
+- **Authentication**: JWT Access & Refresh Token rotation, secure HTTP-only cookies, password reset flows.
+- **RBAC & Multi-tenant**: Workspaces with strict Owner/Admin/Member roles.
+- **Kanban Board**: Real-time project tracking with drag-and-drop.
+- **Real-time Collaboration**: Socket.io backed task updates and chat, secured with JWT socket middleware.
+- **AI Planning**: Task generation and Project summaries powered by OpenAI boundaries.
+
+### Tech Stack
+- Frontend: Next.js (App Router), React Query, Zustand, Tailwind CSS.
+- Backend: Express, Mongoose, Socket.io, Zod.
+- CI/CD: GitHub Actions, Docker Compose.
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and set the following:
+```
+PORT=4000
+NODE_ENV=development
+CLIENT_URL=http://localhost:3000
+DATABASE_URL=mongodb://localhost:27017/velocity
+JWT_ACCESS_SECRET=your_super_secret_access_key
+JWT_REFRESH_SECRET=your_super_secret_refresh_key
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+OPENAI_API_KEY=optional_ai_key
 ```
 
-## Local Setup
+## Local Development
 
-1. Copy `.env.example` to `.env`.
-2. Start MongoDB locally or use Docker Compose.
-3. Install dependencies:
-
+Start everything with Docker Compose (recommended):
+```bash
+docker-compose up --build
+```
+Or locally:
 ```bash
 npm install
-```
-
-4. Start both apps:
-
-```bash
 npm run dev
 ```
 
-- Web: http://localhost:3000
-- API: http://localhost:4000/health
+## Deployment
 
-On Windows PowerShell, use `npm.cmd` if scripts are blocked by execution policy.
-
-## Current MVP Features
-
-- Signup and login API
-- JWT-protected user profile route
-- Workspace creation and member role model
-- Project creation and listing
-- Task creation, updates, status, priority, labels, due dates
-- AI task description and project summary endpoints
-- Socket.io task update, chat, and presence events
-- SaaS dashboard UI with Kanban board, analytics, chat, AI panel
-- Login/signup UI connected to API client
-
-## Next Build Milestones
-
-1. Add refresh token persistence and rotation.
-2. Add email verification and forgot password mail provider.
-3. Add Google OAuth.
-4. Implement invitations acceptance flow.
-5. Add comments, attachments, notifications, and activity logs.
-6. Connect dashboard to live API data.
-7. Add tests for auth, RBAC, projects, and tasks.
-8. Deploy web to Vercel and API to Render/Fly.io.
+1. **Database**: Provision a MongoDB Atlas cluster.
+2. **Backend**: Deploy `apps/api` to Render or Fly.io as a Node Web Service. Set all Env Vars.
+3. **Frontend**: Deploy `apps/web` to Vercel. Set `NEXT_PUBLIC_API_URL` to your backend URL.

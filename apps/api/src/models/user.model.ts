@@ -7,6 +7,10 @@ export interface UserDocument {
   avatarUrl?: string;
   isEmailVerified: boolean;
   twoFactorEnabled: boolean;
+  verificationToken?: string;
+  verificationTokenExpiresAt?: Date;
+  resetPasswordToken?: string;
+  resetPasswordTokenExpiresAt?: Date;
 }
 
 const userSchema = new Schema<UserDocument>(
@@ -16,7 +20,11 @@ const userSchema = new Schema<UserDocument>(
     passwordHash: { type: String, required: true },
     avatarUrl: String,
     isEmailVerified: { type: Boolean, default: false },
-    twoFactorEnabled: { type: Boolean, default: false }
+    twoFactorEnabled: { type: Boolean, default: false },
+    verificationToken: String,
+    verificationTokenExpiresAt: Date,
+    resetPasswordToken: String,
+    resetPasswordTokenExpiresAt: Date
   },
   { timestamps: true }
 );

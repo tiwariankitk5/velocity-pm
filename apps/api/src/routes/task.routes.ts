@@ -11,7 +11,15 @@ taskRouter.use(requireAuth);
 taskRouter.get("/project/:projectId", async (req, res) => {
   const project = await Project.findById(req.params.projectId);
   if (!project) throw new AppError("Project not found", 404, "PROJECT_NOT_FOUND");
-  const tasks = await Task.find({ projectId: project.id }).sort({ createdAt: -1 });
+  
+  const { status, assigneeId, priority } = req.query;
+  const filter: any = { projectId: project.id };
+  
+  if (status) filter.status = { $in: (status as string).split(",") };
+  if (assigneeId) filter.assigneeId = assigneeId;
+  if (priority) filter.priority = { $in: (priority as string).split(",") };
+  
+  const tasks = await Task.find(filter).sort({ createdAt: -1 });
   res.json({ data: tasks.map(toTaskDTO) });
 });
 
