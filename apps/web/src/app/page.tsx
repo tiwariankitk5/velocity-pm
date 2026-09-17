@@ -1,4 +1,7 @@
-import { Activity, Bell, Bot, CalendarDays, CheckCircle2, Clock3, Filter, LayoutDashboard, MessageSquare, Plus, Search, Settings, Users, type LucideIcon } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { Activity, Bell, Bot, CalendarDays, CheckCircle2, Clock3, Filter, LayoutDashboard, MessageSquare, Plus, Search, Settings, Users, X, type LucideIcon } from "lucide-react";
 
 const stats: Array<[string, string, string, LucideIcon]> = [
   ["Completed", "128", "+18%", CheckCircle2],
@@ -33,6 +36,14 @@ const columns = [
 ];
 
 export default function HomePage() {
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: "JWT refresh token rotation moved to Review", detail: "Nikhil updated the task · 4m ago", unread: true, tone: "bg-grape" },
+    { id: 2, title: "You were mentioned in Workspace analytics cards", detail: "Ankit left a comment · 18m ago", unread: true, tone: "bg-teal" },
+    { id: 3, title: "Sprint 12 is due in 9 days", detail: "Project ATLAS · Today", unread: false, tone: "bg-coral" }
+  ]);
+  const unreadCount = notifications.filter((notification) => notification.unread).length;
+
   return (
     <main className="min-h-screen bg-mist text-ink">
       <aside className="fixed left-0 top-0 hidden h-screen w-20 border-r border-black/10 bg-white lg:flex lg:flex-col lg:items-center lg:py-5">
@@ -57,8 +68,15 @@ export default function HomePage() {
               <Search size={18} className="text-black/45" />
               <input className="w-full bg-transparent text-sm outline-none" placeholder="Search tasks, docs, people" />
             </div>
-            <div className="flex items-center gap-2">
-              <button className="focus-ring grid h-10 w-10 place-items-center rounded border border-black/10 bg-white" title="Notifications"><Bell size={18} /></button>
+            <div className="relative flex items-center gap-2">
+              <button onClick={() => setNotificationsOpen((open) => !open)} className="focus-ring relative grid h-10 w-10 place-items-center rounded border border-black/10 bg-white" title="Notifications" aria-label={`Notifications, ${unreadCount} unread`} aria-expanded={notificationsOpen}><Bell size={18} />{unreadCount > 0 && <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-coral px-1 text-[10px] font-bold text-white">{unreadCount}</span>}</button>
+              {notificationsOpen && <section className="absolute right-0 top-12 z-30 w-[min(360px,calc(100vw-2rem))] overflow-hidden rounded border border-black/10 bg-white shadow-xl" aria-label="Notification center">
+                <div className="flex items-center justify-between border-b border-black/10 px-4 py-3"><div><h2 className="font-semibold">Notifications</h2><p className="text-xs text-black/55">{unreadCount ? `${unreadCount} new updates` : "You are all caught up"}</p></div><button onClick={() => setNotificationsOpen(false)} className="focus-ring grid h-8 w-8 place-items-center rounded hover:bg-black/5" aria-label="Close notifications"><X size={17} /></button></div>
+                <div className="max-h-80 overflow-y-auto">
+                  {notifications.map((notification) => <button key={notification.id} onClick={() => setNotifications((items) => items.map((item) => item.id === notification.id ? { ...item, unread: false } : item))} className={`flex w-full gap-3 border-b border-black/5 px-4 py-3 text-left transition hover:bg-mist ${notification.unread ? "bg-grape/5" : ""}`}><span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${notification.tone}`} /><span><strong className="block text-sm leading-5">{notification.title}</strong><span className="mt-1 block text-xs text-black/55">{notification.detail}</span></span>{notification.unread && <span className="ml-auto mt-1 h-2 w-2 shrink-0 rounded-full bg-grape" />}</button>)}
+                </div>
+                <button onClick={() => setNotifications((items) => items.map((item) => ({ ...item, unread: false })))} className="focus-ring w-full bg-mist px-4 py-3 text-sm font-semibold text-teal hover:bg-teal/10">Mark all as read</button>
+              </section>}
               <button className="focus-ring inline-flex h-10 items-center gap-2 rounded bg-ink px-3 text-sm font-semibold text-white"><Plus size={17} /> Task</button>
             </div>
           </div>
