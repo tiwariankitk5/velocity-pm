@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { z } from "zod";
 import { requireAuth } from "../middleware/auth.js";
 import { requireWorkspaceRole } from "../middleware/rbac.js";
+import { AppError } from "../middleware/error-handler.js";
 import { Workspace } from "../models/workspace.model.js";
 
 export const workspaceRouter = Router();
@@ -71,6 +72,10 @@ workspaceRouter.post("/invitations/accept", async (req, res) => {
   
   const invitationIndex = workspace.invitations.findIndex(inv => inv.token === body.token);
   const invitation = workspace.invitations[invitationIndex];
+
+  // The database query above should guarantee this, but retaining the guard
+  // keeps the handler safe if the invitation is changed concurrently.
+  if (!invitation) throw new AppError("Invalid or expired invitation", 400, "INVALID_INVITATION");
   
   if (invitation.email !== req.user?.email) {
     throw new AppError("This invitation is not for your email address", 403, "EMAIL_MISMATCH");

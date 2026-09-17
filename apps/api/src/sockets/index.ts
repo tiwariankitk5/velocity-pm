@@ -2,7 +2,6 @@ import type http from "node:http";
 import { Server } from "socket.io";
 import { env } from "../config/env.js";
 import { verifyAccessToken } from "../services/token.service.js";
-import cookie from "cookie";
 
 export function registerSockets(server: http.Server) {
   const io = new Server(server, {
